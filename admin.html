@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <title>JEYAM | Admin</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <link rel="stylesheet" href="admin.css">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        /* =================================================
+           JEYAM ADMIN LOGO
+        ================================================= */
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+
+        .admin-brand-logo {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            display: block;
+        }
+
+
+        .admin-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+
+        .admin-brand-name {
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+
+            font-size: 27px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+        }
+
+
+        .admin-brand-sub {
+            margin-top: 6px;
+
+            font-size: 9px;
+            font-weight: 600;
+
+            letter-spacing: 2.5px;
+
+            opacity: 0.75;
+        }
+
+
+        @media (max-width: 600px) {
+
+            .admin-brand-logo {
+                width: 42px;
+                height: 42px;
+            }
+
+
+            .admin-brand-name {
+                font-size: 23px;
+            }
+
+
+            .admin-brand-sub {
+                font-size: 8px;
+                letter-spacing: 2px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+
+    <!-- JEYAM LOGO + NAME -->
+
+    <a
+        href="index.html"
+        class="admin-brand"
+    >
+
+        <img
+            src="jeyam-logo.png"
+            alt="JEYAM Furniture Logo"
+            class="admin-brand-logo"
+        >
+
+
+        <span class="admin-brand-text">
+
+            <span class="admin-brand-name">
+                JEYAM
+            </span>
+
+            <small class="admin-brand-sub">
+                FURNITURE / ADMIN
+            </small>
+
+        </span>
+
+    </a>
+
+
+
+    <!-- VIEW WEBSITE -->
+
+    <a href="index.html">
+        ← VIEW WEBSITE
+    </a>
+
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main>
+
+
+<!-- =====================================================
+     LOGIN PANEL
+===================================================== -->
+
+<section
+    id="loginPanel"
+    class="panel login-panel"
+>
+
+
+    <p class="eyebrow">
+        PRIVATE ACCESS
+    </p>
+
+
+    <h1>
+        Admin sign in
+    </h1>
+
+
+    <p class="muted">
+        Sign in to manage your furniture catalogue.
+    </p>
+
+
+
+    <!-- LOGIN FORM -->
+
+    <form id="loginForm">
+
+
+        <label>
+
+            Email
+
+            <input
+                id="email"
+                type="email"
+                required
+                placeholder="admin@example.com"
+            >
+
+        </label>
+
+
+
+        <label>
+
+            Password
+
+            <input
+                id="password"
+                type="password"
+                required
+                placeholder="Your password"
+            >
+
+        </label>
+
+
+
+        <button class="primary">
+            SIGN IN
+        </button>
+
+
+    </form>
+
+
+
+    <p
+        id="loginMessage"
+        class="message"
+    ></p>
+
+
+
+    <p class="hint">
+
+        Admin user must be created in your
+        Supabase project first.
+        See SETUP.md.
+
+    </p>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section
+    id="dashboard"
+    hidden
+>
+
+
+    <!-- DASHBOARD HEADING -->
+
+    <div class="dash-heading">
+
+
+        <div>
+
+            <p class="eyebrow">
+                CATALOGUE MANAGEMENT
+            </p>
+
+
+            <h1>
+                Your products
+            </h1>
+
+
+            <p class="muted">
+
+                Add new furniture, update prices
+                or remove products.
+
+            </p>
+
+        </div>
+
+
+
+        <button
+            id="logout"
+            class="outline"
+        >
+            SIGN OUT
+        </button>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         STATS
+    ================================================= -->
+
+    <div class="stats">
+
+
+        <div class="stat">
+
+            <span>
+                PRODUCTS
+            </span>
+
+            <strong id="productCount">
+                0
+            </strong>
+
+        </div>
+
+
+
+        <div class="stat">
+
+            <span>
+                STATUS
+            </span>
+
+            <strong>
+                LIVE CATALOGUE
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         ADMIN LAYOUT
+    ================================================= -->
+
+    <div class="admin-layout">
+
+
+        <!-- =============================================
+             ADD PRODUCT
+        ============================================= -->
+
+        <section class="panel">
+
+
+            <h2 id="formTitle">
+                Add a product
+            </h2>
+
+
+
+            <form id="productForm">
+
+
+                <input
+                    type="hidden"
+                    id="productId"
+                >
+
+
+
+                <!-- PRODUCT NAME -->
+
+                <label>
+
+                    Product name
+
+                    <input
+                        id="pName"
+                        required
+                        maxlength="100"
+                        placeholder="e.g. Luna Lounge Sofa"
+                    >
+
+                </label>
+
+
+
+                <!-- CATEGORY + PRICE -->
+
+                <div class="two">
+
+
+                    <label>
+
+                        Category
+
+                        <select id="pCategory">
+
+                            <option>
+                                Living
+                            </option>
+
+                            <option>
+                                Bedroom
+                            </option>
+
+                            <option>
+                                Dining
+                            </option>
+
+                            <option>
+                                Office
+                            </option>
+
+                            <option>
+                                Storage
+                            </option>
+
+                            <option>
+                                Outdoor
+                            </option>
+
+                            <option>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+
+                    <label>
+
+                        Price (₹)
+
+                        <input
+                            id="pPrice"
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            placeholder="45900"
+                        >
+
+                    </label>
+
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <label>
+
+                    Description
+
+                    <textarea
+                        id="pDescription"
+                        rows="3"
+                        placeholder="Product details..."
+                    ></textarea>
+
+                </label>
+
+
+
+                <!-- IMAGE -->
+
+                <label>
+
+                    Product image
+
+                    <input
+                        id="pImage"
+                        type="file"
+                        accept="image/*"
+                    >
+
+                    <small>
+                        Upload JPG, PNG or WEBP image
+                        (max 5 MB).
+                    </small>
+
+                </label>
+
+
+
+                <!-- CURRENT IMAGE -->
+
+                <div
+                    id="currentImage"
+                    class="current-image"
+                    hidden
+                ></div>
+
+
+
+                <!-- FORM BUTTONS -->
+
+                <div class="form-actions">
+
+
+                    <button
+                        class="primary"
+                        id="saveButton"
+                    >
+                        SAVE PRODUCT
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="outline"
+                        id="resetForm"
+                    >
+                        CLEAR
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- FORM MESSAGE -->
+
+                <p
+                    id="formMessage"
+                    class="message"
+                ></p>
+
+
+            </form>
+
+
+        </section>
+
+
+
+        <!-- =============================================
+             PRODUCT INVENTORY
+        ============================================= -->
+
+        <section class="panel inventory">
+
+
+            <div class="inventory-heading">
+
+
+                <h2>
+                    Product inventory
+                </h2>
+
+
+
+                <input
+                    id="adminSearch"
+                    placeholder="Search products..."
+                >
+
+
+            </div>
+
+
+
+            <div id="inventoryList">
+
+                <p class="muted">
+                    Loading...
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     SCRIPTS
+===================================================== -->
+
+<script src="config.js"></script>
+
+<script src="admin.js"></script>
+
+
+</body>
+
+</html>
